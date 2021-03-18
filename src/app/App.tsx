@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, FormEventHandler, useState } from 'react';
-import { WorkBook, writeFile } from 'xlsx';
+import { utils, WorkBook, writeFile } from 'xlsx';
 
 import { Button } from '../components/Button';
 
@@ -14,10 +14,10 @@ export const App: FC = () =>
 {
   const DIFF_MODEL_KEY = '__EMPTY_2';
   const DIFF_QUANTITY_KEY = '__EMPTY_5'
-  type DiffData = Array<{
+  type DiffFile = {
     [DIFF_MODEL_KEY]?: string
     [DIFF_QUANTITY_KEY]?: number
-  }>
+  }
 
   const [origText, setOrigText] = useState('');
   const [isOrigLoading, setOrigLoading] = useState(false);
@@ -30,7 +30,7 @@ export const App: FC = () =>
   const [diffText, setDiffText] = useState('');
   const [isDiffLoading, setDiffLoading] = useState(false);
   const [diffLoaded, setDiffLoaded] = useState(false);
-  const [diffData, setDiffData] = useState<DiffData>([]);
+  const [diffData, setDiffData] = useState<Array<DiffFile>>([]);
 
   const [downloadIsDisabled, setDownloadDisabled] = useState(true);
 
@@ -42,18 +42,19 @@ export const App: FC = () =>
       const file = e.target.files[0]
       setOrigLoading(true);
       try {
-        const [data, workBook]: any = await readXLSX(file);
+        const [data, workBook] = await readXLSX<OrigFile>(file);
+        console.log(workBook);
+
         setOrigData(data);
         setWorkBook(workBook);
-        const map = Array.isArray(data)
-          ? data.reduce<any>((acc, item, index) =>
-          {
-            item.model && item.model.trim() && Object.assign(acc, { [item.model.trim()]: index });
-            return acc;
-          }, {})
-          : {}
+
+        const map = data.reduce<{ [key: string]: number }>((acc, item, index) =>
+        {
+          item.model && item.model.trim() && Object.assign(acc, { [item.model.trim()]: index });
+          return acc;
+        }, {});
+
         if (Object.keys(map).length) {
-          console.log(map);
           setMap(map);
           setOrigLoaded(true);
         } else {
@@ -79,7 +80,7 @@ export const App: FC = () =>
       const file = e.target.files[0]
       setDiffLoading(true);
       try {
-        const [data]: any = await readXLSX(file);
+        const [data] = await readXLSX<DiffFile>(file);
         setDiffData(data);
         setDiffLoaded(true);
       } catch (error) {
@@ -113,9 +114,13 @@ export const App: FC = () =>
   const onSaveFileClick = () =>
   {
     if (workBook) {
-      workBook.Sheets![workBook.SheetNames![0]] = origData
+      console.log(workBook);
+      console.log(origData);
+      const sheet = utils.json_to_sheet(origData)
+      workBook.Sheets[workBook.SheetNames[0]] = sheet
       writeFile(workBook, `new_${origText}`);
     }
+
   }
 
   const onSubmit: FormEventHandler<HTMLFormElement> = e => e.preventDefault();

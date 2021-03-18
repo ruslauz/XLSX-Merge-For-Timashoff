@@ -1,6 +1,6 @@
-import { read, utils } from 'xlsx';
+import { read, utils, WorkBook } from 'xlsx';
 
-export const readXLSX = (file: File) => {
+export const readXLSX = <T>(file: File): Promise<[Array<T>, WorkBook]> => {
   return new Promise((res, rej) => {
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
@@ -19,40 +19,3 @@ export const readXLSX = (file: File) => {
       }
   })
 }
-
-/* 
-const fileReader = new FileReader();
-        fileReader.readAsArrayBuffer(file);
-
-        fileReader.onloadstart = () =>
-        {
-          setLoading(true);
-        }
-
-        fileReader.onload = () =>
-        {
-          setLoading(false);
-          setLoadedFiles(prev => prev + 1);
-          const bufferArray = fileReader.result;
-          const workBook = read(bufferArray, { type: "buffer" });
-          const sheet = workBook.Sheets[workBook.SheetNames[0]];
-          const data: Array<OrigFile> = utils.sheet_to_json(sheet);
-          console.log(data);
-          if (isOrig) {
-            const map = data.reduce<any>((acc, item, index) =>
-            {
-              item.model.trim() && Object.assign(acc, { [item.model.trim()]: index });
-              return acc;
-            }, {});
-            console.log(map);
-
-
-          }
-        }
-
-        fileReader.onerror = () =>
-        {
-          console.log('error', fileReader.error);
-          setLoading(false);
-        }
-*/
