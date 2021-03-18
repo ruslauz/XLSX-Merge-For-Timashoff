@@ -9,7 +9,9 @@ export const readXLSX = <T>(file: File): Promise<[Array<T>, WorkBook]> => {
         const bufferArray = fileReader.result;
         const workBook = read(bufferArray, { type: "buffer" });
         const sheet = workBook.Sheets[workBook.SheetNames[0]];
-        const data:Array<any> = utils.sheet_to_json(sheet);
+        const data:Array<T> = utils.sheet_to_json(sheet, {
+          defval: ''
+        });
         res([data, workBook]);
       };
     fileReader.onerror = () =>

@@ -15,8 +15,8 @@ export const App: FC = () =>
   const DIFF_MODEL_KEY = '__EMPTY_2';
   const DIFF_QUANTITY_KEY = '__EMPTY_5'
   type DiffFile = {
-    [DIFF_MODEL_KEY]?: string
-    [DIFF_QUANTITY_KEY]?: number
+    [DIFF_MODEL_KEY]: string
+    [DIFF_QUANTITY_KEY]: number | string
   }
 
   const [origText, setOrigText] = useState('');
@@ -43,8 +43,6 @@ export const App: FC = () =>
       setOrigLoading(true);
       try {
         const [data, workBook] = await readXLSX<OrigFile>(file);
-        console.log(workBook);
-
         setOrigData(data);
         setWorkBook(workBook);
 
@@ -60,7 +58,7 @@ export const App: FC = () =>
         } else {
           setWrongFileFormat(true);
           setOrigLoaded(false);
-        }
+        };
       } catch (error) {
         console.log(error);
         setOrigLoaded(false);
@@ -99,30 +97,18 @@ export const App: FC = () =>
   {
     const newData = diffData.reduce((acc, item) =>
     {
-      const price = (item[DIFF_QUANTITY_KEY] as number);
-      const index = map[(item[DIFF_MODEL_KEY] || '').trim()];
-      if (index && typeof index === "number") {
-        acc[index].quantity = price
+      if (typeof item[DIFF_QUANTITY_KEY] === "number" && typeof item[DIFF_MODEL_KEY] === "string" && map[item[DIFF_MODEL_KEY].trim()]) {
+        acc[map[item[DIFF_MODEL_KEY].trim()]].quantity = item[DIFF_QUANTITY_KEY] as number;
       }
-
       return acc
     }, [...origData]);
     setOrigData(newData);
+    workBook && utils.sheet_add_json(workBook.Sheets[workBook.SheetNames[0]], origData);
     setDownloadDisabled(false);
   }
 
-  const onSaveFileClick = () =>
-  {
-    if (workBook) {
-      console.log(workBook);
-      console.log(origData);
-      const sheet = utils.json_to_sheet(origData)
-      workBook.Sheets[workBook.SheetNames[0]] = sheet
-      writeFile(workBook, `new_${origText}`);
-    }
-
-  }
-
+  const onSaveFileClick = () => workBook && writeFile(workBook, `new_${origText}`);
+    
   const onSubmit: FormEventHandler<HTMLFormElement> = e => e.preventDefault();
 
   return (
