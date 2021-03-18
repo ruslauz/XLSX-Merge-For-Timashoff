@@ -15,8 +15,8 @@ export const App: FC = () =>
   const DIFF_MODEL_KEY = '__EMPTY_2';
   const DIFF_QUANTITY_KEY = '__EMPTY_5'
   type DiffData = Array<{
-    [DIFF_MODEL_KEY]: string
-    [DIFF_QUANTITY_KEY]: number
+    [DIFF_MODEL_KEY]?: string
+    [DIFF_QUANTITY_KEY]?: number
   }>
 
   const [origText, setOrigText] = useState('');
@@ -98,11 +98,12 @@ export const App: FC = () =>
   {
     const newData = diffData.reduce((acc, item) =>
     {
-      const price = item[DIFF_QUANTITY_KEY];
-      const index = map[item[DIFF_MODEL_KEY].trim()];
+      const price = (item[DIFF_QUANTITY_KEY] as number);
+      const index = map[(item[DIFF_MODEL_KEY] || '').trim()];
       if (index && typeof index === "number") {
         acc[index].quantity = price
       }
+
       return acc
     }, [...origData]);
     setOrigData(newData);
