@@ -1,6 +1,8 @@
 import { WorkBook } from 'xlsx/types';
+
 import { DiffFile } from '../types/diffFile';
 import { OrigFile } from '../types/origFile';
+
 import { Types } from './actions';
 
 export type Action<T> = (payload: T) => ({ type: string, payload: T });

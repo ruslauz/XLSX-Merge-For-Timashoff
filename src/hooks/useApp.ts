@@ -3,7 +3,22 @@ import { ChangeEvent, FormEventHandler, useReducer } from 'react';
 import { utils, writeFile } from 'xlsx';
 import { DIFF_MODEL_KEY, DIFF_QUANTITY_KEY } from '../app/App';
 
-import { resetApp, setDiffData, setDiffLoaded, setDiffLoading, setDiffText, setDiffValue, setDownloadDisabled, setMap, setOrigData, setOrigLoaded, setOrigLoading, setOrigText, setOrigValue, setWorkBook, setWrongFileFormat } from '../state/actions';
+import { resetApp,
+  setDiffData,
+  setDiffLoaded,
+  setDiffLoading,
+  setDiffText,
+  setDiffValue,
+  setDownloadDisabled,
+  setMap,
+  setOrigData,
+  setOrigLoaded,
+  setOrigLoading,
+  setOrigText,
+  setOrigValue,
+  setWorkBook,
+  setWrongFileFormat } from '../state/actions';
+
 import { initialState, reducer } from '../state/reducer';
 
 import { DiffFile } from '../types/diffFile';
@@ -100,11 +115,11 @@ export const useApp = () => {
     const newData = diffData.reduce((acc, item) =>
     {
       const model = item[DIFF_MODEL_KEY];
-      const price = item[DIFF_QUANTITY_KEY];
+      const quantity = item[DIFF_QUANTITY_KEY];
       if (typeof model === "string" && model.trim()
-        && typeof price === "number"
+        && typeof quantity === "number"
         && map[model.trim()] !== undefined) {
-        acc[map[model.trim()]].quantity = price;
+        acc[map[model.trim()]].quantity = quantity;
       }
       return acc
     }, [...origData]);

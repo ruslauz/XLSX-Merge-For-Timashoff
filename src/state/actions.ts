@@ -1,5 +1,4 @@
 import { Action } from './reducer';
-
 import { WorkBook } from 'xlsx/types';
 import { DiffFile } from '../types/diffFile';
 import { OrigFile } from './../types/origFile';
