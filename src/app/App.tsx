@@ -20,6 +20,7 @@ export const App: FC = () =>
   }
 
   const [origText, setOrigText] = useState('');
+  const [origValue, setOrigValue] = useState('');
   const [isOrigLoading, setOrigLoading] = useState(false);
   const [origLoaded, setOrigLoaded] = useState(false);
   const [origData, setOrigData] = useState<Array<OrigFile>>([]);
@@ -28,15 +29,33 @@ export const App: FC = () =>
   const [wrongFileFormat, setWrongFileFormat] = useState(false);
 
   const [diffText, setDiffText] = useState('');
+  const [diffValue, setDiffValue] = useState('');
   const [isDiffLoading, setDiffLoading] = useState(false);
   const [diffLoaded, setDiffLoaded] = useState(false);
   const [diffData, setDiffData] = useState<Array<DiffFile>>([]);
 
   const [downloadIsDisabled, setDownloadDisabled] = useState(true);
 
+  const resetApp = () =>
+  {
+    setOrigText('');
+    setOrigLoaded(false);
+    setOrigData([]);
+    setWorkBook(null);
+    setMap({});
+    setDiffText('');
+    setDiffLoaded(false);
+    setDiffData([]);
+    setDownloadDisabled(true);
+    setOrigValue('');
+    setDiffValue('');
+  }
+
   const onOrigChange = async (e: ChangeEvent<HTMLInputElement>) =>
   {
     if (e.target.files?.length) {
+      setOrigValue(e.target.value);
+      setDownloadDisabled(true);
       setWrongFileFormat(false);
       setOrigText(e.target.files[0].name);
       const file = e.target.files[0]
@@ -67,6 +86,7 @@ export const App: FC = () =>
       }
     } else {
       setOrigText('');
+      setOrigValue('');
       setOrigLoaded(false);
     }
   };
@@ -74,6 +94,8 @@ export const App: FC = () =>
   const onDiffChange = async (e: ChangeEvent<HTMLInputElement>) =>
   {
     if (e.target.files?.length) {
+      setDiffValue(e.target.value);
+      setDownloadDisabled(true);
       setDiffText(e.target.files[0].name);
       const file = e.target.files[0]
       setDiffLoading(true);
@@ -89,6 +111,7 @@ export const App: FC = () =>
       }
     } else {
       setDiffText('');
+      setDiffValue('');
       setDiffLoaded(false);
     }
   };
@@ -107,8 +130,12 @@ export const App: FC = () =>
     setDownloadDisabled(false);
   }
 
-  const onSaveFileClick = () => workBook && writeFile(workBook, `new_${origText}`);
-    
+  const onSaveFileClick = () =>
+  {
+    workBook && writeFile(workBook, `new_${origText}`);
+    resetApp();
+  };
+
   const onSubmit: FormEventHandler<HTMLFormElement> = e => e.preventDefault();
 
   return (
@@ -118,7 +145,7 @@ export const App: FC = () =>
       <main className={style.main}>
         <form action="" className={style.mainForm} onSubmit={onSubmit}>
           <label className={style.mainLabel}>
-            <input type="file" className={style.mainFile} onChange={onOrigChange} accept=".xlsx" />
+            <input type="file" className={style.mainFile} onChange={onOrigChange} accept=".xlsx" value={origValue} />
             <span className={style.labelText}>
               {isOrigLoading
                 ? "Файл загружается..."
@@ -130,7 +157,7 @@ export const App: FC = () =>
               : <i className="fas fa-file-excel" />}
           </label>
           <label className={style.diffLabel}>
-            <input type="file" className={style.diffFile} onChange={onDiffChange} accept=".xlsx" />
+            <input type="file" className={style.diffFile} onChange={onDiffChange} accept=".xlsx" value={diffValue} />
             <span className={style.labelText}>
               {isDiffLoading
                 ? "Файл загружается..."
@@ -143,8 +170,8 @@ export const App: FC = () =>
             }
           </label>
           <div className={style.buttons}>
-            <Button icon="fa-cog" disabled={!origLoaded || !diffLoaded} onClick={onProcessClick} />
-            <Button icon="fa-file-download" disabled={downloadIsDisabled} onClick={onSaveFileClick} />
+            <Button icon="fa-cog" disabled={!(origLoaded && diffLoaded)} onClick={onProcessClick} />
+            <Button icon="fa-file-download" disabled={!origLoaded || !diffLoaded || downloadIsDisabled} onClick={onSaveFileClick} />
           </div>
         </form>
       </main>
