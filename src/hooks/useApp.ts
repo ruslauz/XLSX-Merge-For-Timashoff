@@ -19,7 +19,7 @@ import { resetApp,
   setWorkBook,
   setWrongFileFormat } from '../state/actions';
 
-import { initialState, reducer } from '../state/reducer';
+import { initialState, objectReducer } from '../state/reducer';
 
 import { DiffFile } from '../types/diffFile';
 import { OrigFile } from '../types/origFile';
@@ -28,7 +28,7 @@ import { readXLSX } from '../utils/readXLSX';
 
 
 export const useApp = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(objectReducer, initialState);
   const {
     origText,
     origValue,

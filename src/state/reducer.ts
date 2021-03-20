@@ -23,41 +23,24 @@ export type Store = {
   downloadIsDisabled: boolean
 }
 
-export const reducer = (state: Store = initialState, action: ReturnType<Action<any>>): Store  => {
-  switch (action.type) {
-    case Types.SET_ORIG_TEXT:
-      return {...state, origText: action.payload};
-    case Types.SET_ORIG_VALUE:
-      return {...state, origValue: action.payload};
-    case Types.SET_ORIG_LOADING:
-      return {...state, isOrigLoading: action.payload};
-    case Types.SET_ORIG_LOADED:
-      return {...state, origLoaded: action.payload};
-    case Types.SET_ORIG_DATA:
-      return {...state, origData: action.payload};
-    case Types.SET_WORKBOOK:
-      return {...state, workBook: action.payload};
-    case Types.SET_MAP:
-      return {...state, map: action.payload};
-    case Types.SET_WRONG_FILE_FORMAT:
-      return {...state, wrongFileFormat: action.payload};
-    case Types.SET_DIFF_TEXT:
-      return {...state, diffText: action.payload};
-    case Types.SET_DIFF_VALUE:
-      return {...state, diffValue: action.payload};
-    case Types.SET_DIFF_LOADING:
-      return {...state, isDiffLoading: action.payload};
-    case Types.SET_DIFF_LOADED:
-      return {...state, diffLoaded: action.payload};
-    case Types.SET_DIFF_DATA:
-      return {...state, diffData: action.payload};
-    case Types.SET_DOWNLOAD_DISABLED:
-      return {...state, downloadIsDisabled: action.payload};
-    case Types.RESET_APP:
-      return {...state, ...initialState};
-    default:
-      return state;
-  }
+export const objectReducer = (state: Store = initialState, action: ReturnType<Action<any>>): Store => {
+  return {
+    [Types.SET_ORIG_TEXT]: {...state, origText: action.payload},
+    [Types.SET_ORIG_VALUE]: {...state, origValue: action.payload},
+    [Types.SET_ORIG_LOADING]: {...state, isOrigLoading: action.payload},
+    [Types.SET_ORIG_LOADED]: {...state, origLoaded: action.payload},
+    [Types.SET_ORIG_DATA]: {...state, origData: action.payload},
+    [Types.SET_WORKBOOK]: {...state, workBook: action.payload},
+    [Types.SET_MAP]: {...state, map: action.payload},
+    [Types.SET_WRONG_FILE_FORMAT]: {...state, wrongFileFormat: action.payload},
+    [Types.SET_DIFF_TEXT]: {...state, diffText: action.payload},
+    [Types.SET_DIFF_VALUE]: {...state, diffValue: action.payload},
+    [Types.SET_DIFF_LOADING]: {...state, isDiffLoading: action.payload},
+    [Types.SET_DIFF_LOADED]: {...state, diffLoaded: action.payload},
+    [Types.SET_DIFF_DATA]: {...state, diffData: action.payload},
+    [Types.SET_DOWNLOAD_DISABLED]: {...state, downloadIsDisabled: action.payload},
+    [Types.RESET_APP]: {...state, ...initialState} ,
+  }[action.type] || state;
 }
 
 export const initialState = {

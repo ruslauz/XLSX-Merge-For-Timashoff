@@ -28,7 +28,7 @@ export const App: FC = () =>
     onSaveFileClick,
     downloadIsDisabled,
 
-  } = useApp(); 
+  } = useApp();
 
   return (
     <div className={style.app}>
@@ -62,7 +62,7 @@ export const App: FC = () =>
             }
           </label>
           <div className={style.buttons}>
-            <Button icon="fa-cog" disabled={!(origLoaded && diffLoaded)} onClick={onProcessClick} />
+            <Button icon="fa-cogs" disabled={!(origLoaded && diffLoaded)} onClick={onProcessClick} />
             <Button icon="fa-file-download" disabled={!origLoaded || !diffLoaded || downloadIsDisabled} onClick={onSaveFileClick} />
           </div>
         </form>
