@@ -14,6 +14,7 @@ export const ModalContent: FC<ModalContentType> = () => (
     <div className="body">
       <div className="item">
         <label className="checkBoxLabel">
+          <span className="checkBoxLabelText"></span>
           <input className="checkbox" type="checkbox" />
         </label>
       </div>
