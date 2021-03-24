@@ -1,9 +1,11 @@
 import { ChangeEvent, FormEventHandler, useReducer } from 'react';
-
 import { utils, writeFile } from 'xlsx';
+import { pluralize } from 'numeralize-ru';
+
 import { DIFF_MODEL_KEY, DIFF_QUANTITY_KEY } from '../app/App';
 
-import { resetApp,
+import { 
+  resetApp,
   setDiffData,
   setDiffLoaded,
   setDiffLoading,
@@ -17,15 +19,15 @@ import { resetApp,
   setOrigText,
   setOrigValue,
   setWorkBook,
-  setWrongFileFormat } from '../state/actions';
+  setWrongFileFormat,
+  setLogValue,
+  clearLogs, } from '../state/actions';
 
 import { initialState, objectReducer } from '../state/reducer';
 
-import { DiffFile } from '../types/diffFile';
 import { OrigFile } from '../types/origFile';
 
 import { readXLSX } from '../utils/readXLSX';
-
 
 export const useApp = () => {
   const [state, dispatch] = useReducer(objectReducer, initialState);
@@ -43,28 +45,35 @@ export const useApp = () => {
     isDiffLoading,
     diffLoaded,
     diffData,
-    downloadIsDisabled, } = state;
+    downloadIsDisabled,
+    logValue, } = state;
 
-  const onOrigChange = async (e: ChangeEvent<HTMLInputElement>) =>
-  {
+  const onOrigChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
+      const file = e.target.files[0];
       setOrigValue(e.target.value);
       dispatch(setDownloadDisabled(true));
       dispatch(setWrongFileFormat(false));
       dispatch(setOrigText(e.target.files[0].name));
-      const file = e.target.files[0]
       dispatch(setOrigLoading(true));
+
+      const loadStart = Date.now();
+      dispatch(setLogValue(`Загрузка ${e.target.files[0].name}`));
       try {
-        const [data, workBook] = await readXLSX<OrigFile>(file);
+        const [data, workBook] = await readXLSX<OrigFile>(file, 'A', '');
+        const loadFinish = Date.now();
+        dispatch(setLogValue(`Загрузка завершена за ${loadFinish - loadStart} мс`));
+        console.log(data);
         dispatch(setOrigData(data));
         dispatch(setWorkBook(workBook));
 
-        const map = data.reduce<{ [key: string]: number }>((acc, item, index) =>
-        {
-          item.model && item.model.trim() && Object.assign(acc, { [item.model.trim()]: index });
+        const map = data.reduce<{ [key: string]: number }>((acc, item, index) => {
+          item.D && item.D.trim() && Object.assign(acc, { [item.D.trim()]: index });
           return acc;
         }, {});
-
+        console.log(map);
+        console.log(data.length - Object.keys(map).length);
+        
         if (Object.keys(map).length) {
           dispatch(setMap(map));
           dispatch(setOrigLoaded(true));
@@ -85,16 +94,23 @@ export const useApp = () => {
     }
   };
 
-  const onDiffChange = async (e: ChangeEvent<HTMLInputElement>) =>
-  {
+  const onDiffChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       dispatch(setDiffValue(e.target.value));
       dispatch(setDownloadDisabled(true));
       dispatch(setDiffText(e.target.files[0].name));
       const file = e.target.files[0]
       dispatch(setDiffLoading(true));
+
+      const loadStart = Date.now();
+      dispatch(setLogValue(`Загрузка ${e.target.files[0].name}`));
+
       try {
-        const [data] = await readXLSX<DiffFile>(file);
+        const [data] = await readXLSX<{[key: string]: unknown}>(file, 'A');
+        const loadFinish = Date.now();
+        console.log(data);
+
+        dispatch(setLogValue(`Загрузка завершена за ${loadFinish - loadStart} мс`));
         dispatch(setDiffData(data));
         dispatch(setDiffLoaded(true));
       } catch (error) {
@@ -110,19 +126,23 @@ export const useApp = () => {
     }
   };
 
-  const onProcessClick = () =>
-  {
-    const newData = diffData.reduce((acc, item) =>
-    {
-      const model = item[DIFF_MODEL_KEY];
+  const onProcessClick = () => {
+    let changedQuantityCounter = 0
+    const newData = diffData.reduce((acc, item) => {
+      const value = item[DIFF_MODEL_KEY];
       const quantity = item[DIFF_QUANTITY_KEY];
-      if (typeof model === "string" && model.trim()
-        && typeof quantity === "number"
-        && map[model.trim()] !== undefined) {
-        acc[map[model.trim()]].quantity = quantity;
-      }
+        if (typeof value === "string" && typeof quantity === "number") {
+          const match = value.match(/\[(\d+)\]/);
+          if (match !== null && match[1].length && map[match[1]] !== undefined) {
+            changedQuantityCounter++;
+            acc[map[match[1]]].K = quantity;
+          };
+        };
       return acc
     }, [...origData]);
+    console.log(changedQuantityCounter);
+    const positions = pluralize(changedQuantityCounter, 'позиция', 'позиции', 'позиций');
+    dispatch(setLogValue(`Было найдено и заменено ${changedQuantityCounter} ${positions}`));
     dispatch(setOrigData(newData));
     if (workBook !== null) {
       utils.sheet_add_json(workBook.Sheets[workBook.SheetNames[0]], origData)
@@ -130,13 +150,13 @@ export const useApp = () => {
     dispatch(setDownloadDisabled(false));
   }
 
-  const onSaveFileClick = () =>
-  {
+  const onSaveFileClick = () => {
     workBook && writeFile(workBook, `new_${origText}`);
-    dispatch(resetApp(undefined));
+    dispatch(resetApp());
   };
 
   const onSubmit: FormEventHandler<HTMLFormElement> = e => e.preventDefault();
+  const onLogErase = () => dispatch(clearLogs());
 
   return {
     onSubmit,
@@ -154,5 +174,7 @@ export const useApp = () => {
     onProcessClick,
     onSaveFileClick,
     downloadIsDisabled,
+    logValue,
+    onLogErase,
   };
 };

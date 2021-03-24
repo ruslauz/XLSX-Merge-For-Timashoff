@@ -1,11 +1,10 @@
 import { WorkBook } from 'xlsx/types';
 
-import { DiffFile } from '../types/diffFile';
 import { OrigFile } from '../types/origFile';
 
 import { Types } from './actions';
 
-export type Action<T> = (payload: T) => ({ type: string, payload: T });
+export type Action<T> = (payload?: T) => ({ type: string, payload?: T });
 export type Store = {
   origText: string
   origValue: string
@@ -19,8 +18,9 @@ export type Store = {
   diffValue: string
   isDiffLoading: boolean
   diffLoaded: boolean
-  diffData: Array<DiffFile>
+  diffData: Array<{ [key: string]: unknown }>
   downloadIsDisabled: boolean
+  logValue: Array<string>
 }
 
 export const objectReducer = (state: Store = initialState, action: ReturnType<Action<any>>): Store => {
@@ -39,6 +39,8 @@ export const objectReducer = (state: Store = initialState, action: ReturnType<Ac
     [Types.SET_DIFF_LOADED]: {...state, diffLoaded: action.payload},
     [Types.SET_DIFF_DATA]: {...state, diffData: action.payload},
     [Types.SET_DOWNLOAD_DISABLED]: {...state, downloadIsDisabled: action.payload},
+    [Types.SET_LOG_VALUE]: {...state, logValue: state.logValue.concat(action.payload)},
+    [Types.CLEAR_LOG]: {...state, logValue: []} ,
     [Types.RESET_APP]: {...state, ...initialState} ,
   }[action.type] || state;
 }
@@ -58,4 +60,5 @@ export const initialState = {
   diffLoaded: false,
   diffData: [],
   downloadIsDisabled: true,
+  logValue: [],
 };

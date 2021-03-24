@@ -1,6 +1,8 @@
 import { read, utils, WorkBook } from 'xlsx';
 
-export const readXLSX = <T>(file: File): Promise<[Array<T>, WorkBook]> => {
+type Header = 1 | 'A' | Array<string>;
+
+export const readXLSX = <T>(file: File, header?: Header, defval?: any): Promise<[Array<T>, WorkBook]> => {
   return new Promise((res, rej) => {
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
@@ -9,8 +11,10 @@ export const readXLSX = <T>(file: File): Promise<[Array<T>, WorkBook]> => {
         const bufferArray = fileReader.result;
         const workBook = read(bufferArray, { type: "buffer" });
         const sheet = workBook.Sheets[workBook.SheetNames[0]];
-        const data:Array<T> = utils.sheet_to_json(sheet, {
-          defval: ''
+        const data = utils.sheet_to_json<T>(sheet, {
+          defval,
+          header,
+          raw: true,
         });
         res([data, workBook]);
       };
