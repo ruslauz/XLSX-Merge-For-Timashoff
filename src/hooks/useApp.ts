@@ -156,7 +156,7 @@ export const useApp = () => {
   }
 
   const onSaveFileClick = () => {
-    workBook && writeFile(workBook, `new_${origText}`);
+    workBook && writeFile(workBook, `new_${origText}`, {compression: true});
     dispatch(resetApp());
   };
 
