@@ -62,7 +62,7 @@ export const useApp = () => {
       const loadStart = Date.now();
       dispatch(setLogValue(`Загрузка ${e.target.files[0].name}`));
       try {
-        const [data, workBook] = await readXLSX<OrigFile>(file, 'A', '');
+        const [data, workBook] = await readXLSX<OrigFile>(file, { defval: '', header: 'A', range: 2 });
         const loadFinish = Date.now();
         dispatch(setLogValue(`Загрузка завершена за ${loadFinish - loadStart} мс`));
         console.log(data);
@@ -108,7 +108,7 @@ export const useApp = () => {
       dispatch(setLogValue(`Загрузка ${e.target.files[0].name}`));
 
       try {
-        const [data] = await readXLSX<{[key: string]: unknown}>(file, 'A');
+        const [data] = await readXLSX<{[key: string]: unknown}>(file, {header: 'A'});
         const loadFinish = Date.now();
         console.log(data);
 
@@ -150,13 +150,13 @@ export const useApp = () => {
     dispatch(setLogValue(`Было найдено и заменено ${changedQuantityCounter} ${positions}`));
     dispatch(setOrigData(newData));
     if (workBook !== null) {
-      utils.sheet_add_json(workBook.Sheets[workBook.SheetNames[0]], origData, {skipHeader:true})
+      utils.sheet_add_json(workBook.Sheets[workBook.SheetNames[0]], origData, { skipHeader:true, origin: 1 })
     };
     dispatch(setDownloadDisabled(false));
   }
 
   const onSaveFileClick = () => {
-    workBook && writeFile(workBook, `new_${origText}`);
+    workBook && writeFile(workBook, `new_${origText}`, {compression: true});
     dispatch(resetApp());
   };
 
