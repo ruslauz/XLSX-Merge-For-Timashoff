@@ -150,7 +150,7 @@ export const useApp = () => {
     dispatch(setLogValue(`Было найдено и заменено ${changedQuantityCounter} ${positions}`));
     dispatch(setOrigData(newData));
     if (workBook !== null) {
-      utils.sheet_add_json(workBook.Sheets[workBook.SheetNames[0]], origData)
+      utils.sheet_add_json(workBook.Sheets[workBook.SheetNames[0]], origData, {skipHeader:true})
     };
     dispatch(setDownloadDisabled(false));
   }
