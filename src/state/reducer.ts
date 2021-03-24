@@ -21,6 +21,7 @@ export type Store = {
   diffData: Array<{ [key: string]: unknown }>
   downloadIsDisabled: boolean
   logValue: Array<string>
+  modalOpened: boolean
 }
 
 export const objectReducer = (state: Store = initialState, action: ReturnType<Action<any>>): Store => {
@@ -41,6 +42,7 @@ export const objectReducer = (state: Store = initialState, action: ReturnType<Ac
     [Types.SET_DOWNLOAD_DISABLED]: {...state, downloadIsDisabled: action.payload},
     [Types.SET_LOG_VALUE]: {...state, logValue: state.logValue.concat(action.payload)},
     [Types.CLEAR_LOG]: {...state, logValue: []} ,
+    [Types.SET_MODAL_OPENED]: {...state, modalOpened: action.payload} ,
     [Types.RESET_APP]: {...state, ...initialState} ,
   }[action.type] || state;
 }
@@ -61,4 +63,5 @@ export const initialState = {
   diffData: [],
   downloadIsDisabled: true,
   logValue: [],
+  modalOpened: false,
 };

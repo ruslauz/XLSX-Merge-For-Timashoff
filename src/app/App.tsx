@@ -3,8 +3,10 @@ import { FC } from 'react';
 import { useApp } from '../hooks/useApp';
 
 import { Button } from '../components/Button';
+import { Modal } from '../components/Modal';
 
 import style from './style.module.css';
+import { ModalContent } from '../components/ModalContent';
 
 export const DIFF_MODEL_KEY = 'B';
 export const DIFF_QUANTITY_KEY = 'C'
@@ -28,12 +30,15 @@ export const App: FC = () => {
     downloadIsDisabled,
     logValue,
     onLogErase,
+    onModalOpen,
+    onModalClose,
+    modalOpened,
   } = useApp();
 
   return (
     <div className={style.app}>
-      <button className={style.menu}>
-        <i className="fas fa-bars"></i>
+      <button className={style.menu} onClick={onModalOpen}>
+        <i className="fas fa-bars" />
       </button>
       <header className={style.header}>
       </header>
@@ -85,6 +90,9 @@ export const App: FC = () => {
               </div>
             </div>)
         }
+        <Modal open={modalOpened} onModalClose={onModalClose}>
+          <ModalContent />
+        </Modal>
       </main>
     </div>
   );

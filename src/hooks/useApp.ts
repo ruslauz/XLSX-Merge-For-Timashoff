@@ -21,7 +21,8 @@ import {
   setWorkBook,
   setWrongFileFormat,
   setLogValue,
-  clearLogs, } from '../state/actions';
+  clearLogs,
+  setModalOpened, } from '../state/actions';
 
 import { initialState, objectReducer } from '../state/reducer';
 
@@ -46,7 +47,8 @@ export const useApp = () => {
     diffLoaded,
     diffData,
     downloadIsDisabled,
-    logValue, } = state;
+    logValue,
+    modalOpened,} = state;
 
   const onOrigChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
@@ -136,10 +138,13 @@ export const useApp = () => {
           if (match !== null && match[1].length && map[match[1]] !== undefined) {
             changedQuantityCounter++;
             acc[map[match[1]]].K = quantity;
-          };
+          } 
         };
       return acc
-    }, [...origData]);
+    }, origData.map(item => {
+      item.K = 0;
+      return item;
+    }));
     console.log(changedQuantityCounter);
     const positions = pluralize(changedQuantityCounter, 'позиция', 'позиции', 'позиций');
     dispatch(setLogValue(`Было найдено и заменено ${changedQuantityCounter} ${positions}`));
@@ -157,6 +162,8 @@ export const useApp = () => {
 
   const onSubmit: FormEventHandler<HTMLFormElement> = e => e.preventDefault();
   const onLogErase = () => dispatch(clearLogs());
+  const onModalOpen = () => dispatch(setModalOpened(true));
+  const onModalClose = () => dispatch(setModalOpened(false));
 
   return {
     onSubmit,
@@ -176,5 +183,8 @@ export const useApp = () => {
     downloadIsDisabled,
     logValue,
     onLogErase,
+    onModalOpen,
+    onModalClose,
+    modalOpened,
   };
 };
