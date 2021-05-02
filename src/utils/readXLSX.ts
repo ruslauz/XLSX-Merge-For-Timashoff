@@ -1,6 +1,8 @@
 import { read, Sheet2JSONOpts, utils, WorkBook } from 'xlsx';
 
+
 export const readXLSX = <T>(file: File, options?: Sheet2JSONOpts): Promise<[Array<T>, WorkBook]> => {
+
   return new Promise((res, rej) => {
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
