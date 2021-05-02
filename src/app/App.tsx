@@ -90,7 +90,7 @@ export const App: FC = () => {
               </div>
             </div>)
         }
-        <Modal open={modalOpened} onModalClose={onModalClose}>
+        <Modal open={modalOpened} title="Настройки" onModalClose={onModalClose}>
           <ModalContent />
         </Modal>
       </main>

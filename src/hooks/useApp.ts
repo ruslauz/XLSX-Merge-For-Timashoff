@@ -129,7 +129,9 @@ export const useApp = () => {
   };
 
   const onProcessClick = () => {
-    let changedQuantityCounter = 0
+    let changedQuantityCounter = 0;
+    const positions = pluralize(changedQuantityCounter, 'позиция', 'позиции', 'позиций');
+
     const newData = diffData.reduce((acc, item) => {
       const value = item[DIFF_MODEL_KEY];
       const quantity = item[DIFF_QUANTITY_KEY];
@@ -145,8 +147,7 @@ export const useApp = () => {
       item.K = 0;
       return item;
     }));
-    console.log(changedQuantityCounter);
-    const positions = pluralize(changedQuantityCounter, 'позиция', 'позиции', 'позиций');
+
     dispatch(setLogValue(`Было найдено и заменено ${changedQuantityCounter} ${positions}`));
     dispatch(setOrigData(newData));
     if (workBook !== null) {

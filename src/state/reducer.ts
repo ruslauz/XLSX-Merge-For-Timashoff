@@ -34,15 +34,20 @@ export const objectReducer = (state: Store = initialState, action: ReturnType<Ac
     [Types.SET_WORKBOOK]: {...state, workBook: action.payload},
     [Types.SET_MAP]: {...state, map: action.payload},
     [Types.SET_WRONG_FILE_FORMAT]: {...state, wrongFileFormat: action.payload},
+
     [Types.SET_DIFF_TEXT]: {...state, diffText: action.payload},
     [Types.SET_DIFF_VALUE]: {...state, diffValue: action.payload},
     [Types.SET_DIFF_LOADING]: {...state, isDiffLoading: action.payload},
     [Types.SET_DIFF_LOADED]: {...state, diffLoaded: action.payload},
     [Types.SET_DIFF_DATA]: {...state, diffData: action.payload},
+
     [Types.SET_DOWNLOAD_DISABLED]: {...state, downloadIsDisabled: action.payload},
+
     [Types.SET_LOG_VALUE]: {...state, logValue: state.logValue.concat(action.payload)},
     [Types.CLEAR_LOG]: {...state, logValue: []} ,
+
     [Types.SET_MODAL_OPENED]: {...state, modalOpened: action.payload} ,
+    
     [Types.RESET_APP]: {...state, ...initialState} ,
   }[action.type] || state;
 }

@@ -7,17 +7,10 @@ type ModalContentType = {
 }
 
 export const ModalContent: FC<ModalContentType> = () => (
-  <div className={style.settings}>
-    <header className="header">
-      <span className="title">Настройки</span>
-    </header>
-    <div className="body">
-      <div className="item">
-        <label className="checkBoxLabel">
-          <span className="checkBoxLabelText"></span>
-          <input className="checkbox" type="checkbox" />
-        </label>
-      </div>
-    </div>
+  <div className={style.item}>
+    <label className={style.checkBoxLabel}>
+      <input className={style.checkbox} type="checkbox" />
+      <span className={style.checkBoxLabelText}>Отображать логи</span>
+    </label>
   </div>
 );

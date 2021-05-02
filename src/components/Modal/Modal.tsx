@@ -3,24 +3,22 @@ import style from './Modal.module.css';
 
 type ModalType = {
   open: boolean,
+  title: string,
   children?: ReactNode,
   onModalClose: () => void,
 }
 
-export const Modal: FC<ModalType> = ({ open, children, onModalClose }) => {
+export const Modal: FC<ModalType> = ({ open, title, children, onModalClose }) => {
 
   const onModalClick: MouseEventHandler<HTMLDivElement> = (e) => {
     e.stopPropagation()
-  }
-  const closeModal: MouseEventHandler<HTMLDivElement | HTMLButtonElement> = e => {
-
   }
 
   return open ? (
     <div className={style.layer} onClick={onModalClose}>
       <div className={style.modal} onClick={onModalClick}>
         <header className={style.header}>
-          <span className={style.title}></span>
+          <span className={style.title}>{title}</span>
           <button className={style.close} onClick={onModalClose}><i className="fas fa-times" /></button>
         </header>
         <div className={style.body}>
