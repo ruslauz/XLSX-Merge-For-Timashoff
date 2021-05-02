@@ -3,7 +3,8 @@ import { ChangeEvent, FormEventHandler, useReducer } from 'react';
 import { utils, writeFile } from 'xlsx';
 import { DIFF_MODEL_KEY, DIFF_QUANTITY_KEY } from '../app/App';
 
-import { resetApp,
+import {
+  resetApp,
   setDiffData,
   setDiffLoaded,
   setDiffLoading,
@@ -17,12 +18,18 @@ import { resetApp,
   setOrigText,
   setOrigValue,
   setWorkBook,
-  setWrongFileFormat } from '../state/actions';
+  setWrongFileFormat, 
+  uploadTemplate,
+  uploadTemplateFail,
+  uploadTemplateSuccess} from '../state/actions';
 
 import { initialState, objectReducer } from '../state/reducer';
 
 import { DiffFile } from '../types/diffFile';
 import { OrigFile } from '../types/origFile';
+import { TemplateItem } from '../types/templateFile';
+import { getSheetByIndex } from '../utils/getSheetByIndex';
+import { getSheetNameByIndex } from '../utils/getSheetNameByIndex';
 
 import { readXLSX } from '../utils/readXLSX';
 
@@ -43,12 +50,13 @@ export const useApp = () => {
     isDiffLoading,
     diffLoaded,
     diffData,
-    downloadIsDisabled, } = state;
+    downloadIsDisabled,
+    isTemplateLoading,
+    templateFileName,
+    templateLoaded } = state;
 
-  const onOrigChange = async (e: ChangeEvent<HTMLInputElement>) =>
-  {
+  const onOrigChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
-      setOrigValue(e.target.value);
       dispatch(setDownloadDisabled(true));
       dispatch(setWrongFileFormat(false));
       dispatch(setOrigText(e.target.files[0].name));
@@ -59,11 +67,13 @@ export const useApp = () => {
         dispatch(setOrigData(data));
         dispatch(setWorkBook(workBook));
 
-        const map = data.reduce<{ [key: string]: number }>((acc, item, index) =>
-        {
+        const map = data.reduce<{ [key: string]: number }>((acc, item, index) => {
           item.model && item.model.trim() && Object.assign(acc, { [item.model.trim()]: index });
           return acc;
         }, {});
+
+      console.log(data);
+      
 
         if (Object.keys(map).length) {
           dispatch(setMap(map));
@@ -85,10 +95,25 @@ export const useApp = () => {
     }
   };
 
-  const onDiffChange = async (e: ChangeEvent<HTMLInputElement>) =>
-  {
+  const onTemplateUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
-      dispatch(setDiffValue(e.target.value));
+      dispatch(uploadTemplate(undefined))
+      const file = e.target.files[0];
+      const fileName = e.target.files[0].name;
+      try {
+        const [[data], workBook] = await readXLSX<TemplateItem>(file, 1);
+        console.log(data, workBook);
+        dispatch(uploadTemplateSuccess({data, fileName, workBook}))
+
+      } catch (error) {
+        console.log(error);
+        dispatch(uploadTemplateFail(undefined))
+      }
+    }
+  };
+
+  const onDiffChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) {
       dispatch(setDownloadDisabled(true));
       dispatch(setDiffText(e.target.files[0].name));
       const file = e.target.files[0]
@@ -110,29 +135,34 @@ export const useApp = () => {
     }
   };
 
-  const onProcessClick = () =>
-  {
-    const newData = diffData.reduce((acc, item) =>
-    {
+  const onProcessClick = () => {
+    const {newData, templateDate} = diffData.reduce((acc, item) => {
       const model = item[DIFF_MODEL_KEY];
       const quantity = item[DIFF_QUANTITY_KEY];
       if (typeof model === "string" && model.trim()
         && typeof quantity === "number"
         && map[model.trim()] !== undefined) {
-        acc[map[model.trim()]].quantity = quantity;
+          const {newData} = acc
+          newData[map[model.trim()]].quantity = quantity;
       }
       return acc
-    }, [...origData]);
+    },{ newData: [...origData], templateDate: {}});
     dispatch(setOrigData(newData));
     if (workBook !== null) {
-      utils.sheet_add_json(workBook.Sheets[workBook.SheetNames[0]], origData)
+      const index = 0
+      const newWorkBook = {...workBook}
+      const sheetName = getSheetNameByIndex(workBook, index);
+      const sheet = {...getSheetByIndex(workBook, index)};
+      utils.sheet_add_json(sheet, origData);
+      utils.book_append_sheet(newWorkBook, sheet,  sheetName);
+      dispatch(setWorkBook(newWorkBook));
     };
     dispatch(setDownloadDisabled(false));
   }
 
-  const onSaveFileClick = () =>
-  {
+  const onSaveFileClick = () => {
     workBook && writeFile(workBook, `new_${origText}`);
+    // workBook && writeFile(workBook, `ozone_${origText}`);
     dispatch(resetApp(undefined));
   };
 
@@ -154,5 +184,9 @@ export const useApp = () => {
     onProcessClick,
     onSaveFileClick,
     downloadIsDisabled,
+    onTemplateUpload,
+    isTemplateLoading,
+    templateFileName,
+    templateLoaded,
   };
 };

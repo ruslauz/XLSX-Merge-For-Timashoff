@@ -2,6 +2,7 @@ import { Action } from './reducer';
 import { WorkBook } from 'xlsx/types';
 import { DiffFile } from '../types/diffFile';
 import { OrigFile } from './../types/origFile';
+import { TemplateItem } from '../types/templateFile';
 
 export enum Types {
   SET_ORIG_TEXT = 'SET_ORIG_TEXT',
@@ -19,7 +20,12 @@ export enum Types {
   SET_DIFF_DATA = 'SET_DIFF_DATA',
   SET_DOWNLOAD_DISABLED = 'SET_DOWNLOAD_DISABLED',
   RESET_APP = 'RESET_APP',
-}
+
+  UPLOAD_TEMPLATE = 'UPLOAD_TEMPLATE',
+  UPLOAD_TEMPLATE_SUCCESS = 'UPLOAD_TEMPLATE_SUCCESS',
+  UPLOAD_TEMPLATE_FAIL = 'UPLOAD_TEMPLATE_FAIL',
+  SAVE_TEMPLATE_DATA = 'SAVE_TEMPLATE_DATA',
+} 
 
 export const setOrigText: Action<string> = text => ({
   type: Types.SET_ORIG_TEXT,
@@ -95,3 +101,23 @@ export const resetApp: Action<undefined> = () => ({
   type: Types.RESET_APP,
   payload: undefined,
 });
+
+export const uploadTemplate: Action<undefined> = () => ({
+  type: 'UPLOAD_TEMPLATE',
+  payload: undefined,
+})
+
+export const uploadTemplateSuccess: Action<{[key: string]: any}> = (payload) => ({
+  type: Types.UPLOAD_TEMPLATE_SUCCESS,
+  payload,
+})
+
+export const uploadTemplateFail: Action<undefined> = () => ({
+  type: Types.UPLOAD_TEMPLATE_FAIL,
+  payload: undefined,
+})
+
+export const saveTemplateData: Action<TemplateItem[]> = (templateData) => ({
+  type: Types.SAVE_TEMPLATE_DATA,
+  payload: templateData,
+})
