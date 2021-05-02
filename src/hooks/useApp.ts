@@ -27,6 +27,9 @@ import {
 import { initialState, objectReducer } from '../state/reducer';
 
 import { OrigFile } from '../types/origFile';
+import { TemplateItem } from '../types/templateFile';
+import { getSheetByIndex } from '../utils/getSheetByIndex';
+import { getSheetNameByIndex } from '../utils/getSheetNameByIndex';
 
 import { readXLSX } from '../utils/readXLSX';
 
@@ -96,14 +99,29 @@ export const useApp = () => {
     }
   };
 
+  const onTemplateUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) {
+      dispatch(uploadTemplate(undefined))
+      const file = e.target.files[0];
+      const fileName = e.target.files[0].name;
+      try {
+        const [[data], workBook] = await readXLSX<TemplateItem>(file, 1);
+        console.log(data, workBook);
+        dispatch(uploadTemplateSuccess({data, fileName, workBook}))
+
+      } catch (error) {
+        console.log(error);
+        dispatch(uploadTemplateFail(undefined))
+      }
+    }
+  };
+
   const onDiffChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
-      dispatch(setDiffValue(e.target.value));
       dispatch(setDownloadDisabled(true));
       dispatch(setDiffText(e.target.files[0].name));
       const file = e.target.files[0]
       dispatch(setDiffLoading(true));
-
       const loadStart = Date.now();
       dispatch(setLogValue(`Загрузка ${e.target.files[0].name}`));
 

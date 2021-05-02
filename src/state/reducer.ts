@@ -1,6 +1,7 @@
 import { WorkBook } from 'xlsx/types';
 
 import { OrigFile } from '../types/origFile';
+import { TemplateItem } from '../types/templateFile';
 
 import { Types } from './actions';
 
@@ -20,9 +21,42 @@ export type Store = {
   diffLoaded: boolean
   diffData: Array<{ [key: string]: unknown }>
   downloadIsDisabled: boolean
+<<<<<<< HEAD
   logValue: Array<string>
   modalOpened: boolean
+=======
+  isTemplateLoading: boolean,
+  templateLoaded: boolean,
+  templateFileName: string,
+  templateItem: TemplateItem | {}
+  templateData: TemplateItem[],
+  templateWorkBook: WorkBook | null,
+
+>>>>>>> b0c9e20 (refactored onProcessClick added utilities)
 }
+
+export const initialState: Store = {
+  origText: '',
+  origValue: '',
+  isOrigLoading: false,
+  origLoaded: false,
+  origData: [],
+  workBook: null,
+  map: {},
+  wrongFileFormat: false,
+  diffText: '',
+  diffValue: '',
+  isDiffLoading: false,
+  diffLoaded: false,
+  diffData: [],
+  downloadIsDisabled: true,
+  isTemplateLoading: false,
+  templateLoaded: false,
+  templateFileName: '',
+  templateItem: {},
+  templateData: [],
+  templateWorkBook: null,
+};
 
 export const objectReducer = (state: Store = initialState, action: ReturnType<Action<any>>): Store => {
   return {
@@ -42,16 +76,30 @@ export const objectReducer = (state: Store = initialState, action: ReturnType<Ac
     [Types.SET_DIFF_DATA]: {...state, diffData: action.payload},
 
     [Types.SET_DOWNLOAD_DISABLED]: {...state, downloadIsDisabled: action.payload},
+<<<<<<< HEAD
 
     [Types.SET_LOG_VALUE]: {...state, logValue: state.logValue.concat(action.payload)},
     [Types.CLEAR_LOG]: {...state, logValue: []} ,
 
     [Types.SET_MODAL_OPENED]: {...state, modalOpened: action.payload} ,
     
+=======
+    [Types.UPLOAD_TEMPLATE]: {...state, downloadIsDisabled: false, isTemplateLoading: true},
+    [Types.UPLOAD_TEMPLATE_SUCCESS]: {
+      ...state,
+      isTemplateLoading: false,
+      templateFileName: action.payload?.fileName,
+      templateItem: action.payload?.data,
+      templateWorkBook: action.payload?.workBook,
+      templateLoaded: true},
+    [Types.UPLOAD_TEMPLATE_FAIL]: {...state, isTemplateLoading: false, templateLoaded: false},
+    [Types.SAVE_TEMPLATE_DATA]: {...state, templateData: action.payload},
+>>>>>>> b0c9e20 (refactored onProcessClick added utilities)
     [Types.RESET_APP]: {...state, ...initialState} ,
   }[action.type] || state;
 }
 
+<<<<<<< HEAD
 export const initialState = {
   origText: '',
   origValue: '',
@@ -70,3 +118,5 @@ export const initialState = {
   logValue: [],
   modalOpened: false,
 };
+=======
+>>>>>>> b0c9e20 (refactored onProcessClick added utilities)

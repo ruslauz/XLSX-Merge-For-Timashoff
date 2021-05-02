@@ -44,24 +44,24 @@ export const App: FC = () => {
       </header>
       <main className={style.main}>
         <form action="" className={style.mainForm} onSubmit={onSubmit}>
-          <label className={style.mainLabel}>
-            <input type="file" className={style.mainFile} onChange={onOrigChange} accept=".xlsx" value={origValue} />
+          <label className={style.label}>
+            <input type="file" className={style.input} onChange={onOrigChange} accept=".xlsx" value={origValue} />
             <span className={style.labelText}>
               {isOrigLoading
                 ? "Файл загружается..."
-                : (wrongFileFormat && "Неверный формат") || origText || "Эталон"
+                : (wrongFileFormat && "Неверный формат") || origText || "Мой шаблон"
               }
             </span>
             {isOrigLoading
               ? <i className="fas fa-spinner fa-pulse" />
               : <i className="fas fa-file-excel" />}
           </label>
-          <label className={style.diffLabel}>
-            <input type="file" className={style.diffFile} onChange={onDiffChange} accept=".xlsx" value={diffValue} />
+          <label className={style.label}>
+            <input type="file" className={style.input} onChange={onDiffChange} accept=".xlsx" value={diffValue} />
             <span className={style.labelText}>
               {isDiffLoading
                 ? "Файл загружается..."
-                : diffText || "Изменения"
+                : diffText || "Остатки"
               }
             </span>
             {isDiffLoading
@@ -69,9 +69,22 @@ export const App: FC = () => {
               : <i className="fas fa-file-excel" />
             }
           </label>
+          <label className={style.label}>
+            <input type="file" className={style.input} onChange={onTemplateUpload} accept=".xlsx" value='' />
+            <span className={style.labelText}>
+              {isTemplateLoading
+                ? "Файл загружается..."
+                : templateFileName || "Шаблон Озон"
+              }
+            </span>
+            {isTemplateLoading
+              ? <i className="fas fa-spinner fa-pulse" />
+              : <i className="fas fa-file-excel" />
+            }
+          </label>
           <div className={style.buttons}>
-            <Button icon="fa-cogs" disabled={!(origLoaded && diffLoaded)} onClick={onProcessClick} />
-            <Button icon="fa-file-download" disabled={!origLoaded || !diffLoaded || downloadIsDisabled} onClick={onSaveFileClick} />
+            <Button icon="fa-cogs" disabled={!(origLoaded && diffLoaded && templateLoaded)} onClick={onProcessClick} />
+            <Button icon="fa-file-download" disabled={!origLoaded || !diffLoaded || !templateLoaded || downloadIsDisabled} onClick={onSaveFileClick} />
           </div>
         </form>
         {
