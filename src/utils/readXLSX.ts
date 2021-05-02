@@ -1,6 +1,8 @@
-import { read, utils, WorkBook } from 'xlsx';
+import { read, Sheet2JSONOpts, utils, WorkBook } from 'xlsx';
 
-export const readXLSX = <T>(file: File, sheetIndex = 0): Promise<[Array<T>, WorkBook]> => {
+
+export const readXLSX = <T>(file: File, options?: Sheet2JSONOpts): Promise<[Array<T>, WorkBook]> => {
+
   return new Promise((res, rej) => {
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
@@ -8,10 +10,8 @@ export const readXLSX = <T>(file: File, sheetIndex = 0): Promise<[Array<T>, Work
       {
         const bufferArray = fileReader.result;
         const workBook = read(bufferArray, { type: "buffer" });
-        const sheet = workBook.Sheets[workBook.SheetNames[sheetIndex]];
-        const data:Array<T> = utils.sheet_to_json(sheet, {
-          defval: ''
-        });
+        const sheet = workBook.Sheets[workBook.SheetNames[0]];
+        const data = utils.sheet_to_json<T>(sheet, options);
         res([data, workBook]);
       };
     fileReader.onerror = () =>

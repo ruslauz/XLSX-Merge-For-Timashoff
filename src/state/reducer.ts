@@ -1,12 +1,11 @@
 import { WorkBook } from 'xlsx/types';
 
-import { DiffFile } from '../types/diffFile';
 import { OrigFile } from '../types/origFile';
 import { TemplateItem } from '../types/templateFile';
 
 import { Types } from './actions';
 
-export type Action<T> = (payload: T) => ({ type: string, payload: T });
+export type Action<T> = (payload?: T) => ({ type: string, payload?: T });
 export type Store = {
   origText: string
   origValue: string
@@ -20,15 +19,16 @@ export type Store = {
   diffValue: string
   isDiffLoading: boolean
   diffLoaded: boolean
-  diffData: Array<DiffFile>
+  diffData: Array<{ [key: string]: unknown }>
   downloadIsDisabled: boolean
+  logValue: Array<string>
+  modalOpened: boolean
   isTemplateLoading: boolean,
   templateLoaded: boolean,
   templateFileName: string,
   templateItem: TemplateItem | {}
   templateData: TemplateItem[],
   templateWorkBook: WorkBook | null,
-
 }
 
 export const initialState: Store = {
@@ -64,12 +64,22 @@ export const objectReducer = (state: Store = initialState, action: ReturnType<Ac
     [Types.SET_WORKBOOK]: {...state, workBook: action.payload},
     [Types.SET_MAP]: {...state, map: action.payload},
     [Types.SET_WRONG_FILE_FORMAT]: {...state, wrongFileFormat: action.payload},
+
     [Types.SET_DIFF_TEXT]: {...state, diffText: action.payload},
     [Types.SET_DIFF_VALUE]: {...state, diffValue: action.payload},
     [Types.SET_DIFF_LOADING]: {...state, isDiffLoading: action.payload},
     [Types.SET_DIFF_LOADED]: {...state, diffLoaded: action.payload},
     [Types.SET_DIFF_DATA]: {...state, diffData: action.payload},
+
     [Types.SET_DOWNLOAD_DISABLED]: {...state, downloadIsDisabled: action.payload},
+
+
+    [Types.SET_LOG_VALUE]: {...state, logValue: state.logValue.concat(action.payload)},
+    [Types.CLEAR_LOG]: {...state, logValue: []} ,
+
+    [Types.SET_MODAL_OPENED]: {...state, modalOpened: action.payload} ,
+    
+
     [Types.UPLOAD_TEMPLATE]: {...state, downloadIsDisabled: false, isTemplateLoading: true},
     [Types.UPLOAD_TEMPLATE_SUCCESS]: {
       ...state,
@@ -80,7 +90,27 @@ export const objectReducer = (state: Store = initialState, action: ReturnType<Ac
       templateLoaded: true},
     [Types.UPLOAD_TEMPLATE_FAIL]: {...state, isTemplateLoading: false, templateLoaded: false},
     [Types.SAVE_TEMPLATE_DATA]: {...state, templateData: action.payload},
+
     [Types.RESET_APP]: {...state, ...initialState} ,
   }[action.type] || state;
 }
 
+
+export const initialState = {
+  origText: '',
+  origValue: '',
+  isOrigLoading: false,
+  origLoaded: false,
+  origData: [],
+  workBook: null,
+  map: {},
+  wrongFileFormat: false,
+  diffText: '',
+  diffValue: '',
+  isDiffLoading: false,
+  diffLoaded: false,
+  diffData: [],
+  downloadIsDisabled: true,
+  logValue: [],
+  modalOpened: false,
+};

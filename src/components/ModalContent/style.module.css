@@ -1,0 +1,27 @@
+.item {
+
+}
+
+.checkBoxLabel {
+
+}
+
+.checkbox {
+
+}
+
+.checkBoxLabelText {
+  display: flex;
+  align-items: center;
+}
+
+/* .checkBoxLabelText::after {
+  font-family: 'Font Awesome 5 Free';
+  content: '\f14a';
+  display: flex;
+  width: 20px;
+  height: 20px;
+  margin-left: 20px;
+  border: 1px solid;
+  border-radius: 3px;
+} */

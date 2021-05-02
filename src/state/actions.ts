@@ -1,6 +1,5 @@
 import { Action } from './reducer';
 import { WorkBook } from 'xlsx/types';
-import { DiffFile } from '../types/diffFile';
 import { OrigFile } from './../types/origFile';
 import { TemplateItem } from '../types/templateFile';
 
@@ -11,6 +10,7 @@ export enum Types {
   SET_ORIG_LOADED = 'SET_ORIG_LOADED',
   SET_ORIG_DATA = 'SET_ORIG_DATA',
   SET_WORKBOOK = 'SET_WORKBOOK',
+
   SET_MAP = 'SET_MAP',
   SET_WRONG_FILE_FORMAT = 'SET_WRONG_FILE_FORMAT',
   SET_DIFF_TEXT = 'SET_DIFF_TEXT',
@@ -18,7 +18,14 @@ export enum Types {
   SET_DIFF_LOADING = 'SET_DIFF_LOADING',
   SET_DIFF_LOADED = 'SET_DIFF_LOADED',
   SET_DIFF_DATA = 'SET_DIFF_DATA',
+
   SET_DOWNLOAD_DISABLED = 'SET_DOWNLOAD_DISABLED',
+
+  SET_LOG_VALUE = 'SET_LOG_VALUE',
+  CLEAR_LOG = 'CLEAR_LOG',
+
+  SET_MODAL_OPENED = 'SET_MODAL_OPENED',
+
   RESET_APP = 'RESET_APP',
 
   UPLOAD_TEMPLATE = 'UPLOAD_TEMPLATE',
@@ -87,7 +94,7 @@ export const setDiffLoaded: Action<boolean> = boolean => ({
   payload: boolean,
 });
 
-export const setDiffData: Action<Array<DiffFile>> = array => ({
+export const setDiffData: Action<Array<{[key: string]: unknown}>> = array => ({
   type: Types.SET_DIFF_DATA,
   payload: array
 });
@@ -97,9 +104,22 @@ export const setDownloadDisabled: Action<boolean> = boolean => ({
   payload: boolean,
 });
 
+export const setLogValue: Action<string> = value => ({
+  type: Types.SET_LOG_VALUE,
+  payload: value,
+});
+
+export const setModalOpened: Action<boolean> = boolean => ({
+  type: Types.SET_MODAL_OPENED,
+  payload: boolean,
+});
+
+export const clearLogs: Action<undefined> = () => ({
+  type: Types.CLEAR_LOG,
+});
+
 export const resetApp: Action<undefined> = () => ({
   type: Types.RESET_APP,
-  payload: undefined,
 });
 
 export const uploadTemplate: Action<undefined> = () => ({
