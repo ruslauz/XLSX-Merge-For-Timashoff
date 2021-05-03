@@ -27,7 +27,6 @@ export type Store = {
   isTemplateLoading: boolean,
   templateLoaded: boolean,
   templateFileName: string,
-  templateItem: TemplateItem | {}
   templateData: TemplateItem[],
   templateWorkBook: WorkBook | null,
 
@@ -51,7 +50,6 @@ export const initialState: Store = {
   isTemplateLoading: false,
   templateLoaded: false,
   templateFileName: '',
-  templateItem: {},
   templateData: [],
   templateWorkBook: null,
   logValue: [],
@@ -86,11 +84,10 @@ export const objectReducer = (state: Store = initialState, action: ReturnType<Ac
       ...state,
       isTemplateLoading: false,
       templateFileName: action.payload?.fileName,
-      templateItem: action.payload?.data,
       templateWorkBook: action.payload?.workBook,
       templateLoaded: true},
     [Types.UPLOAD_TEMPLATE_FAIL]: {...state, isTemplateLoading: false, templateLoaded: false},
-    [Types.SAVE_TEMPLATE_DATA]: {...state, templateData: action.payload},
+    [Types.SAVE_TEMPLATE_WORKBOOK]: {...state, templateWorkBook: action.payload},
     
     [Types.RESET_APP]: {...state, ...initialState} ,
   }[action.type] || state;

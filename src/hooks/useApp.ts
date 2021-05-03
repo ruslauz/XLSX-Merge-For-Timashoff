@@ -1,3 +1,4 @@
+import { TEMPLATE_ITEM } from './../constants/index';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ChangeEvent, FormEventHandler, useReducer } from 'react';
 import { utils, writeFile } from 'xlsx';
@@ -26,7 +27,9 @@ import {
   setModalOpened,
   uploadTemplate,
   uploadTemplateSuccess,
-  uploadTemplateFail, } from '../state/actions';
+  uploadTemplateFail,
+  saveTemplateWorkBook,
+  } from '../state/actions';
 
 import { initialState, objectReducer } from '../state/reducer';
 
@@ -59,7 +62,8 @@ export const useApp = () => {
     modalOpened,
     isTemplateLoading,
     templateFileName,
-    templateLoaded
+    templateLoaded,
+    templateWorkBook,
   } = state;
 
   const onOrigChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -114,9 +118,9 @@ export const useApp = () => {
       const file = e.target.files[0];
       const fileName = e.target.files[0].name;
       try {
-        const [[data], workBook] = await readXLSX<TemplateItem>(file);
-        console.log(data, workBook);
-        dispatch(uploadTemplateSuccess({data, fileName, workBook}))
+        const [, workBook] = await readXLSX<TemplateItem>(file);
+        console.log(workBook);
+        dispatch(uploadTemplateSuccess({fileName, workBook}))
 
       } catch (error) {
         console.log(error);
@@ -165,13 +169,18 @@ export const useApp = () => {
         if (typeof value === "string" && typeof quantity === "number") {
           const match = value.match(/\[(\d+)\]/);
           if (match !== null && match[1].length && map[match[1]] !== undefined) {
-            const {newData} = acc;
+            const {newData, templateData} = acc;
+            const templateDataItem: TemplateItem  = {...TEMPLATE_ITEM, Артикул: match[1], Количество: quantity}
             changedQuantityCounter++;
             newData[map[match[1]]].K = quantity;
+            templateData.push(templateDataItem);
           } 
         };
       return acc
     }, {newData: origDataZeroRemaining, templateData: []});
+
+    console.log(templateData);
+    
     
     if (workBook !== null) {
       const index = 0
@@ -182,6 +191,16 @@ export const useApp = () => {
       newWorkBook.Sheets[sheetName] = sheet;
       dispatch(setWorkBook(newWorkBook));
     };
+    
+    if (templateWorkBook !== null) {
+      const index = 1
+      const newWorkBook = {...templateWorkBook}
+      const sheetName = getSheetNameByIndex(newWorkBook, index);
+      const sheet = {...getSheetByIndex(newWorkBook, index)};
+      utils.sheet_add_json(sheet, templateData);
+      newWorkBook.Sheets[sheetName] = sheet;
+      dispatch(saveTemplateWorkBook(newWorkBook));
+    };
 
     dispatch(setLogValue(`Было найдено и заменено ${changedQuantityCounter} ${positions}`));
     dispatch(setOrigData(newData));
@@ -191,6 +210,7 @@ export const useApp = () => {
   const onSaveFileClick = () => {
     // workBook && writeFile(workBook, `new_${origText}`, {compression: true});
     workBook && writeXLSX(workBook, origText);
+    templateWorkBook && writeXLSX(templateWorkBook, templateFileName);
     dispatch(resetApp());
   };
 

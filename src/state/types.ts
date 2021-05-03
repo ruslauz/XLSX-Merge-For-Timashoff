@@ -1,3 +1,4 @@
+import { WorkBook } from "xlsx/types";
 import { TemplateItem } from "../types/templateFile";
 import { Types } from "./actions"
 
@@ -14,7 +15,7 @@ export interface UploadTemplateFail {
   type: Types.UPLOAD_TEMPLATE_FAIL,
 }
 
-export interface SaveTemplateData{
-  type: Types.SAVE_TEMPLATE_DATA,
-  payload: TemplateItem[],
+export interface SaveTemplateWorkBook {
+  type: Types.SAVE_TEMPLATE_WORKBOOK,
+  payload: WorkBook,
 }
