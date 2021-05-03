@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ChangeEvent, FormEventHandler, useReducer } from 'react';
 import { utils, writeFile } from 'xlsx';
 import { pluralize } from 'numeralize-ru';
@@ -22,7 +23,10 @@ import {
   setWrongFileFormat,
   setLogValue,
   clearLogs,
-  setModalOpened, } from '../state/actions';
+  setModalOpened,
+  uploadTemplate,
+  uploadTemplateSuccess,
+  uploadTemplateFail, } from '../state/actions';
 
 import { initialState, objectReducer } from '../state/reducer';
 
@@ -32,6 +36,7 @@ import { getSheetByIndex } from '../utils/getSheetByIndex';
 import { getSheetNameByIndex } from '../utils/getSheetNameByIndex';
 
 import { readXLSX } from '../utils/readXLSX';
+import { writeXLSX } from '../utils/writeXLSX';
 
 export const useApp = () => {
   const [state, dispatch] = useReducer(objectReducer, initialState);
@@ -51,7 +56,11 @@ export const useApp = () => {
     diffData,
     downloadIsDisabled,
     logValue,
-    modalOpened,} = state;
+    modalOpened,
+    isTemplateLoading,
+    templateFileName,
+    templateLoaded
+  } = state;
 
   const onOrigChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
@@ -65,7 +74,7 @@ export const useApp = () => {
       const loadStart = Date.now();
       dispatch(setLogValue(`Загрузка ${e.target.files[0].name}`));
       try {
-        const [data, workBook] = await readXLSX<OrigFile>(file, { defval: '', header: 'A', range: 2 });
+        const [data, workBook] = await readXLSX<OrigFile>(file, { defval: '', header: 'A', range: 1 });
         const loadFinish = Date.now();
         dispatch(setLogValue(`Загрузка завершена за ${loadFinish - loadStart} мс`));
         console.log(data);
@@ -101,17 +110,17 @@ export const useApp = () => {
 
   const onTemplateUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
-      dispatch(uploadTemplate(undefined))
+      dispatch(uploadTemplate())
       const file = e.target.files[0];
       const fileName = e.target.files[0].name;
       try {
-        const [[data], workBook] = await readXLSX<TemplateItem>(file, 1);
+        const [[data], workBook] = await readXLSX<TemplateItem>(file);
         console.log(data, workBook);
         dispatch(uploadTemplateSuccess({data, fileName, workBook}))
 
       } catch (error) {
         console.log(error);
-        dispatch(uploadTemplateFail(undefined))
+        dispatch(uploadTemplateFail())
       }
     }
   };
@@ -149,33 +158,39 @@ export const useApp = () => {
   const onProcessClick = () => {
     let changedQuantityCounter = 0;
     const positions = pluralize(changedQuantityCounter, 'позиция', 'позиции', 'позиций');
-
-    const newData = diffData.reduce((acc, item) => {
+    const origDataZeroRemaining = origData.map(item =>  ({...item, K: 0}))
+    const {newData, templateData} = diffData.reduce<{newData: OrigFile[], templateData: TemplateItem[]}>((acc, item) => {
       const value = item[DIFF_MODEL_KEY];
       const quantity = item[DIFF_QUANTITY_KEY];
         if (typeof value === "string" && typeof quantity === "number") {
           const match = value.match(/\[(\d+)\]/);
           if (match !== null && match[1].length && map[match[1]] !== undefined) {
+            const {newData} = acc;
             changedQuantityCounter++;
-            acc[map[match[1]]].K = quantity;
+            newData[map[match[1]]].K = quantity;
           } 
         };
       return acc
-    }, origData.map(item => {
-      item.K = 0;
-      return item;
-    }));
+    }, {newData: origDataZeroRemaining, templateData: []});
+    
+    if (workBook !== null) {
+      const index = 0
+      const newWorkBook = {...workBook}
+      const sheetName = getSheetNameByIndex(workBook, index);
+      const sheet = {...getSheetByIndex(workBook, index)};
+      utils.sheet_add_json(sheet, newData, {skipHeader: true, origin: 'A2'});
+      newWorkBook.Sheets[sheetName] = sheet;
+      dispatch(setWorkBook(newWorkBook));
+    };
 
     dispatch(setLogValue(`Было найдено и заменено ${changedQuantityCounter} ${positions}`));
     dispatch(setOrigData(newData));
-    if (workBook !== null) {
-      utils.sheet_add_json(workBook.Sheets[workBook.SheetNames[0]], origData, { skipHeader:true, origin: 1 })
-    };
     dispatch(setDownloadDisabled(false));
   }
 
   const onSaveFileClick = () => {
-    workBook && writeFile(workBook, `new_${origText}`, {compression: true});
+    // workBook && writeFile(workBook, `new_${origText}`, {compression: true});
+    workBook && writeXLSX(workBook, origText);
     dispatch(resetApp());
   };
 
@@ -205,5 +220,9 @@ export const useApp = () => {
     onModalOpen,
     onModalClose,
     modalOpened,
+    onTemplateUpload,
+    isTemplateLoading,
+    templateFileName,
+    templateLoaded,
   };
 };

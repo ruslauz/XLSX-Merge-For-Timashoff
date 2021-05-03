@@ -2,6 +2,7 @@ import { Action } from './reducer';
 import { WorkBook } from 'xlsx/types';
 import { OrigFile } from './../types/origFile';
 import { TemplateItem } from '../types/templateFile';
+import { SaveTemplateData, UploadTemplate, UploadTemplateFail, UploadTemplateSuccess } from './types';
 
 export enum Types {
   SET_ORIG_TEXT = 'SET_ORIG_TEXT',
@@ -122,22 +123,20 @@ export const resetApp: Action<undefined> = () => ({
   type: Types.RESET_APP,
 });
 
-export const uploadTemplate: Action<undefined> = () => ({
-  type: 'UPLOAD_TEMPLATE',
-  payload: undefined,
+export const uploadTemplate = (): UploadTemplate => ({
+  type: Types.UPLOAD_TEMPLATE,
 })
 
-export const uploadTemplateSuccess: Action<{[key: string]: any}> = (payload) => ({
+export const uploadTemplateSuccess = (payload: {[key: string]: any}) : UploadTemplateSuccess => ({
   type: Types.UPLOAD_TEMPLATE_SUCCESS,
   payload,
 })
 
-export const uploadTemplateFail: Action<undefined> = () => ({
+export const uploadTemplateFail = (): UploadTemplateFail => ({
   type: Types.UPLOAD_TEMPLATE_FAIL,
-  payload: undefined,
 })
 
-export const saveTemplateData: Action<TemplateItem[]> = (templateData) => ({
+export const saveTemplateData = (templateData: TemplateItem[]): SaveTemplateData => ({
   type: Types.SAVE_TEMPLATE_DATA,
   payload: templateData,
 })

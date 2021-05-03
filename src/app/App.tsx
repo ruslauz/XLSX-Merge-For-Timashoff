@@ -33,6 +33,10 @@ export const App: FC = () => {
     onModalOpen,
     onModalClose,
     modalOpened,
+    onTemplateUpload,
+    isTemplateLoading,
+    templateFileName,
+    templateLoaded,
   } = useApp();
 
   return (
