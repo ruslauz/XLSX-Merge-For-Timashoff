@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/XLSX-Merge-For-Timashoff/static/css/main.198b8e1f.chunk.css",
-    "main.js": "/XLSX-Merge-For-Timashoff/static/js/main.65757466.chunk.js",
+    "main.js": "/XLSX-Merge-For-Timashoff/static/js/main.1e79672b.chunk.js",
     "runtime-main.js": "/XLSX-Merge-For-Timashoff/static/js/runtime-main.6707047c.js",
-    "static/js/2.efcb262e.chunk.js": "/XLSX-Merge-For-Timashoff/static/js/2.efcb262e.chunk.js",
+    "static/js/2.747da89f.chunk.js": "/XLSX-Merge-For-Timashoff/static/js/2.747da89f.chunk.js",
     "index.html": "/XLSX-Merge-For-Timashoff/index.html",
-    "static/js/2.efcb262e.chunk.js.LICENSE.txt": "/XLSX-Merge-For-Timashoff/static/js/2.efcb262e.chunk.js.LICENSE.txt"
+    "static/js/2.747da89f.chunk.js.LICENSE.txt": "/XLSX-Merge-For-Timashoff/static/js/2.747da89f.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.6707047c.js",
-    "static/js/2.efcb262e.chunk.js",
+    "static/js/2.747da89f.chunk.js",
     "static/css/main.198b8e1f.chunk.css",
-    "static/js/main.65757466.chunk.js"
+    "static/js/main.1e79672b.chunk.js"
   ]
 }
