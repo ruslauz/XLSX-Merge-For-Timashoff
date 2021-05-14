@@ -1,7 +1,6 @@
 import { TEMPLATE_ITEM } from './../constants/index';
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ChangeEvent, FormEventHandler, useReducer } from 'react';
-import { utils, writeFile } from 'xlsx';
+import { utils } from 'xlsx';
 import { pluralize } from 'numeralize-ru';
 
 import { DIFF_MODEL_KEY, DIFF_QUANTITY_KEY } from '../app/App';
@@ -177,10 +176,7 @@ export const useApp = () => {
           } 
         };
       return acc
-    }, {newData: origDataZeroRemaining, templateData: []});
-
-    console.log(templateData);
-    
+    }, {newData: origDataZeroRemaining, templateData: []});    
     
     if (workBook !== null) {
       const index = 0
@@ -208,7 +204,6 @@ export const useApp = () => {
   }
 
   const onSaveFileClick = () => {
-    // workBook && writeFile(workBook, `new_${origText}`, {compression: true});
     workBook && writeXLSX(workBook, origText);
     templateWorkBook && writeXLSX(templateWorkBook, templateFileName);
     dispatch(resetApp());
