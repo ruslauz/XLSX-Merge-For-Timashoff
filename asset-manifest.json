@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/XLSX-Merge-For-Timashoff/static/css/main.198b8e1f.chunk.css",
-    "main.js": "/XLSX-Merge-For-Timashoff/static/js/main.1e79672b.chunk.js",
+    "main.css": "/XLSX-Merge-For-Timashoff/static/css/main.ca54b402.chunk.css",
+    "main.js": "/XLSX-Merge-For-Timashoff/static/js/main.548e832b.chunk.js",
     "runtime-main.js": "/XLSX-Merge-For-Timashoff/static/js/runtime-main.6707047c.js",
     "static/js/2.747da89f.chunk.js": "/XLSX-Merge-For-Timashoff/static/js/2.747da89f.chunk.js",
     "index.html": "/XLSX-Merge-For-Timashoff/index.html",
@@ -10,7 +10,7 @@
   "entrypoints": [
     "static/js/runtime-main.6707047c.js",
     "static/js/2.747da89f.chunk.js",
-    "static/css/main.198b8e1f.chunk.css",
-    "static/js/main.1e79672b.chunk.js"
+    "static/css/main.ca54b402.chunk.css",
+    "static/js/main.548e832b.chunk.js"
   ]
 }
